@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "algoburn"
+version = "0.1.0"
+description = "AlgoBurn - DPDP Consent Protocol Smart Contract"
+readme = "README.md"
+packages = [{include = "contracts"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+algopy = ">=0.2.0"
+algokit-utils = "^2.0.0"
+pytest = "^8.3.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.0.0"
+ruff = "^0.8.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry_api"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"

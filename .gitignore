@@ -1,0 +1,36 @@
+# ========================
+# 🚨 SECURITY (SABSE ZAROORI) 🚨
+# ========================
+**/.env*
+**/*.pem
+**/*.key
+
+# ========================
+# PYTHON (Smart Contracts & Agent API)
+# ========================
+**/__pycache__/
+**/*.py[cod]
+**/.venv/
+**/venv/
+**/.pytest_cache/
+
+# ========================
+# NODE.JS / REACT (Frontend)
+# ========================
+**/node_modules/
+**/build/
+**/dist/
+**/npm-debug.log*
+
+# ========================
+# ALGOKIT & VIBEKIT TOOLS
+# ========================
+**/.algokit/
+**/.vibekit/
+**/.puya_cache/
+
+# ========================
+# OS & IDE FILES
+# ========================
+**/.vscode/
+**/.DS_Store
