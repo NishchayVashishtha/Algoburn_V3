@@ -1,72 +1,165 @@
 import time
+import base64
 import requests
 from algosdk.v2client import indexer
 
 # ==========================================
-# ⚙️ CONFIGURATION ZONE
+# ⚙️  CONFIGURATION
 # ==========================================
-APP_ID = 758657427
-INDEXER_URL = "https://testnet-idx.algonode.cloud"
+APP_ID           = 758657427
+INDEXER_URL      = "https://testnet-idx.algonode.cloud"
+ENTERPRISE_API   = "http://localhost:3000/api/v1/delete-user-data"
+ENTERPRISE_KEY   = "algoburn-dev-key"
 
-# TODO: Replace this with Paarth's actual API URL (e.g., localhost or ngrok)
-MOCK_API_URL = "https://monologue-squealer-stride.ngrok-free.dev/api/v1/delete-user-data" 
+# ARC4 method selector for burn_consent(uint64)void
+# Computed as: first 4 bytes of SHA-512/256("burn_consent(uint64)void")
+# We detect it by checking the first app-arg of each transaction.
+BURN_METHOD_NAME = "burn_consent"
 
-# Initialize the Algorand Indexer (Read-only node)
 myindexer = indexer.IndexerClient(indexer_token="", indexer_address=INDEXER_URL)
 
+# ── Helpers ──────────────────────────────────────────────────────────────────
+
 def get_current_round():
-    """Fetches the current block round so we don't trigger on old historical transactions."""
     try:
-        health = myindexer.health()
-        return health.get('round', 0)
+        return myindexer.health().get("round", 0)
     except Exception as e:
         print(f"Warning: Could not fetch initial round: {e}")
         return 0
 
-print("=====================================================")
-print("🤖 ALGOBURN AI AGENT ACTIVATED")
-print(f"📡 Monitoring App ID {APP_ID} on Algorand TestNet...")
-print("=====================================================\n")
+def is_burn_transaction(tx: dict) -> bool:
+    """
+    Returns True if this transaction is a burn_consent ABI call.
+    ARC4 ABI calls encode the method selector as the first app-arg (4 bytes).
+    We check the decoded arg contains 'burn_consent' as a loose match,
+    OR we check the application-transaction args list.
+    """
+    app_txn = tx.get("application-transaction", {})
+    args    = app_txn.get("application-args", [])
+    if not args:
+        return False
+
+    # The first arg is the 4-byte ABI method selector (base64-encoded by the indexer)
+    try:
+        selector_bytes = base64.b64decode(args[0])
+        # ARC4 selector is exactly 4 bytes; raw string args are longer
+        # burn_consent ABI selector — pre-computed constant
+        # sha512_256("burn_consent(uint64)void")[:4]
+        import hashlib
+        sig    = "burn_consent(uint64)void"
+        digest = hashlib.new("sha512_256", sig.encode()).digest()
+        expected_selector = digest[:4]
+        return selector_bytes == expected_selector
+    except Exception:
+        return False
+
+def extract_sender(tx: dict) -> str:
+    return tx.get("sender", "unknown")
+
+def resolve_user_id(sender_address: str) -> str | None:
+    """
+    Maps an Algorand address to an enterprise userId.
+    In production this would be a DB lookup. For the demo we call the
+    enterprise /api/v1/users endpoint and match by a stored wallet field,
+    or fall back to purging by address as a userId hint.
+
+    For the hackathon demo: the relayer signs everything from one address,
+    so we purge all active users (or you can hardcode a mapping here).
+    """
+    # Hardcoded demo mapping: relayer address → user to purge
+    # Replace with your actual relayer address if you want a specific user
+    RELAYER_TO_USER = {
+        "E6BVL6D2BAGZQ6NYZMNPDWIXSN2ZNQ5CI2MCWMGZ3SWUSEW3COGDACOHEER": "user_001",
+    }
+    return RELAYER_TO_USER.get(sender_address, None)
+
+def purge_user(user_id: str, tx_id: str):
+    """Calls the Enterprise API to purge a specific user."""
+    try:
+        res = requests.post(
+            ENTERPRISE_API,
+            json={"userId": user_id},
+            headers={
+                "Content-Type": "application/json",
+                "x-api-key": ENTERPRISE_KEY,
+            },
+            timeout=10,
+        )
+        if res.status_code == 200:
+            print(f"  ✅ Enterprise DB purged: {user_id} (TxID: {tx_id})")
+        else:
+            print(f"  ⚠️  Enterprise API returned {res.status_code}: {res.text}")
+    except Exception as e:
+        print(f"  ❌ Enterprise API call failed: {e}")
+
+def purge_all_active_users(tx_id: str):
+    """
+    Fallback for demo: fetches all users and purges every Active one.
+    Used when we can't map the sender address to a specific userId.
+    """
+    try:
+        res = requests.get("http://localhost:3000/api/v1/users", timeout=10)
+        users = res.json().get("users", [])
+        active = [u for u in users if u["status"] == "Active"]
+        if not active:
+            print("  ℹ️  No active users to purge.")
+            return
+        for user in active:
+            purge_user(user["userId"], tx_id)
+    except Exception as e:
+        print(f"  ❌ Could not fetch users for bulk purge: {e}")
+
+# ── Main loop ────────────────────────────────────────────────────────────────
+
+print("=" * 55)
+print("🤖  ALGOBURN AI AGENT ACTIVATED")
+print(f"📡  Monitoring App ID {APP_ID} on Algorand TestNet")
+print(f"🏢  Enterprise API  : {ENTERPRISE_API}")
+print("=" * 55 + "\n")
 
 last_round = get_current_round()
+print(f"Starting from round {last_round}\n")
 
-# The Infinite Polling Loop
 while True:
     try:
-        # Ask the blockchain: "Any new transactions for our App ID since the last block I checked?"
         response = myindexer.search_transactions(
             application_id=APP_ID,
-            min_round=last_round + 1
+            min_round=last_round + 1,
         )
-
-        transactions = response.get('transactions', [])
+        transactions = response.get("transactions", [])
 
         for tx in transactions:
-            tx_id = tx.get('id')
-            confirmed_round = tx.get('confirmed-round', 0)
-            
-            # Update our tracker so we don't process this again
+            tx_id           = tx.get("id", "unknown")
+            confirmed_round = tx.get("confirmed-round", 0)
+
             if confirmed_round > last_round:
                 last_round = confirmed_round
 
-            # The Hackathon Magic Trigger
-            print(f"\n🚨 ALERT: Smart Contract Interaction Detected! (TxID: {tx_id})")
-            print("🧠 AI Agent analyzing payload... 'ConsentRevoked' event verified.")
-            print("🔥 Triggering Enterprise Data Deletion Protocol...")
+            # Only act on burn_consent calls
+            if not is_burn_transaction(tx):
+                print(f"  ↳ Skipping non-burn tx {tx_id[:12]}...")
+                continue
 
-            # Fire the request to Paarth's DB
-            try:
-                api_res = requests.post(MOCK_API_URL, json={"action": "purge_data", "timestamp": time.time()})
-                print(f"🏢 Enterprise DB Response: {api_res.status_code} - Data Successfully Purged.")
-            except Exception as e:
-                print(f"⚠️ API Strike Failed. Is Paarth's server running? Error: {e}")
+            sender = extract_sender(tx)
+            print(f"\n🚨  burn_consent detected!")
+            print(f"    TxID   : {tx_id}")
+            print(f"    Sender : {sender}")
+            print(f"    Round  : {confirmed_round}")
+            print("🧠  AI Agent: ConsentRevoked event verified. Triggering purge...")
 
-            print("✅ Mission accomplished. Resuming monitoring...\n")
+            user_id = resolve_user_id(sender)
+            if user_id:
+                purge_user(user_id, tx_id)
+            else:
+                # Demo fallback: purge all active users
+                print("  ℹ️  No address→userId mapping found. Purging all active users (demo mode).")
+                purge_all_active_users(tx_id)
 
-        # Wait 5 seconds before checking the blockchain again
-        print("👀 Scanning blockchain...", end="\r", flush=True)
-        time.sleep(5) 
+            print("✅  Mission complete. Resuming monitoring...\n")
+
+        print("👀  Scanning blockchain...", end="\r", flush=True)
+        time.sleep(5)
 
     except Exception as e:
-        print(f"Blockchain Indexer timeout, retrying... ({e})")
+        print(f"\nIndexer error, retrying in 5s... ({e})")
         time.sleep(5)
