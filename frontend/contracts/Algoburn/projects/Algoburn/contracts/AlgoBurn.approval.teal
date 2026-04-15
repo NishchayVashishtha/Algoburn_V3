@@ -1,0 +1,146 @@
+#pragma version 11
+#pragma typetrack false
+
+// algopy.arc4.ARC4Contract.approval_program() -> uint64:
+main:
+    intcblock 0 1 4 3
+    txn NumAppArgs
+    bz main_create_application@10
+    txn OnCompletion
+    !
+    assert
+    txn ApplicationID
+    assert
+    pushbytess 0x3ba0c5ef 0xfc879781 0x64b695d5 // method "mint_consent()uint64", method "claim_consent(uint64)void", method "burn_consent(uint64)void"
+    txna ApplicationArgs 0
+    match mint_consent claim_consent burn_consent
+    err
+
+main_create_application@10:
+    txn OnCompletion
+    !
+    txn ApplicationID
+    !
+    &&
+    return
+
+
+// contracts.algo_burn.AlgoBurn.mint_consent[routing]() -> void:
+mint_consent:
+    itxn_begin
+    global CurrentApplicationAddress
+    dupn 3
+    itxn_field ConfigAssetClawback
+    itxn_field ConfigAssetFreeze
+    itxn_field ConfigAssetReserve
+    itxn_field ConfigAssetManager
+    pushbytes 0x68747470733a2f2f616c676f6275726e2e696f2f636f6e73656e742d6e6674
+    itxn_field ConfigAssetURL
+    pushbytes 0x416c676f4275726e20436f6e73656e74204e4654
+    itxn_field ConfigAssetName
+    pushbytes 0x434f4e53454e54
+    itxn_field ConfigAssetUnitName
+    intc_0 // 0
+    itxn_field ConfigAssetDecimals
+    intc_1 // 1
+    itxn_field ConfigAssetTotal
+    intc_3 // acfg
+    itxn_field TypeEnum
+    intc_0 // 0
+    itxn_field Fee
+    itxn_submit
+    itxn CreatedAssetID
+    itxn_begin
+    global CurrentApplicationAddress
+    intc_0 // 0
+    itxn_field AssetAmount
+    itxn_field AssetReceiver
+    dup
+    itxn_field XferAsset
+    intc_2 // axfer
+    itxn_field TypeEnum
+    intc_0 // 0
+    itxn_field Fee
+    itxn_submit
+    itob
+    pushbytes 0x151f7c75
+    swap
+    concat
+    log
+    intc_1 // 1
+    return
+
+
+// contracts.algo_burn.AlgoBurn.claim_consent[routing]() -> void:
+claim_consent:
+    txna ApplicationArgs 1
+    dup
+    len
+    pushint 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    txn Sender
+    itxn_begin
+    swap
+    btoi
+    global CurrentApplicationAddress
+    intc_1 // 1
+    itxn_field AssetAmount
+    uncover 2
+    itxn_field AssetReceiver
+    itxn_field AssetSender
+    itxn_field XferAsset
+    intc_2 // axfer
+    itxn_field TypeEnum
+    intc_0 // 0
+    itxn_field Fee
+    itxn_submit
+    intc_1 // 1
+    return
+
+
+// contracts.algo_burn.AlgoBurn.burn_consent[routing]() -> void:
+burn_consent:
+    txna ApplicationArgs 1
+    dup
+    len
+    pushint 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    txn Sender
+    itxn_begin
+    dig 1
+    btoi
+    global CurrentApplicationAddress
+    intc_1 // 1
+    itxn_field AssetAmount
+    itxn_field AssetReceiver
+    dig 1
+    itxn_field AssetSender
+    dup
+    itxn_field XferAsset
+    intc_2 // axfer
+    itxn_field TypeEnum
+    intc_0 // 0
+    itxn_field Fee
+    itxn_submit
+    itxn_begin
+    global CurrentApplicationAddress
+    dupn 3
+    itxn_field ConfigAssetClawback
+    itxn_field ConfigAssetFreeze
+    itxn_field ConfigAssetReserve
+    itxn_field ConfigAssetManager
+    itxn_field ConfigAsset
+    intc_3 // acfg
+    itxn_field TypeEnum
+    intc_0 // 0
+    itxn_field Fee
+    itxn_submit
+    concat
+    pushbytes 0x6f78e9a6 // method "ConsentRevoked(uint64,address)"
+    swap
+    concat
+    log
+    intc_1 // 1
+    return

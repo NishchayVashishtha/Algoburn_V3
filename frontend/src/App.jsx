@@ -20,27 +20,28 @@ const STATE = { LOGIN: 'login', VAULT: 'vault', DASHBOARD: 'dashboard' }
 
 export default function App() {
   const [appState, setAppState] = useState(STATE.LOGIN)
-  const [email, setEmail]       = useState('')
-  const [userId, setUserId]     = useState(null)
+  const [email,    setEmail]    = useState('')
+  const [userId,   setUserId]   = useState(null)
   const [mintTxId, setMintTxId] = useState(null)
-  const [error, setError]       = useState(null)
+  const [assetId,  setAssetId]  = useState(null)   // ← NFT asset ID from mint
+  const [error,    setError]    = useState(null)
 
   function handleLogin(userEmail) {
     setEmail(userEmail)
-    // Resolve enterprise userId from email (null if not in mock DB)
     setUserId(EMAIL_TO_USER_ID[userEmail.toLowerCase()] ?? null)
     setAppState(STATE.VAULT)
   }
 
-  function handleMintSuccess(txId) {
+  // ZKPVault calls this with { txId, assetId }
+  function handleMintSuccess({ txId, assetId: id }) {
     setMintTxId(txId)
+    setAssetId(id)
     setAppState(STATE.DASHBOARD)
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-indigo-50 to-slate-100
                     flex flex-col items-center justify-center px-4 py-12">
-      {/* Subtle grid background */}
       <div
         className="pointer-events-none fixed inset-0 opacity-[0.03]"
         style={{
@@ -60,6 +61,7 @@ export default function App() {
         <DPDPDashboard
           email={email}
           mintTxId={mintTxId}
+          assetId={assetId}
           userId={userId}
           onError={setError}
         />
@@ -67,12 +69,8 @@ export default function App() {
 
       <p className="mt-8 text-xs text-gray-400 text-center">
         Powered by{' '}
-        <a
-          href="https://algorand.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-indigo-400 hover:text-indigo-600 underline"
-        >
+        <a href="https://algorand.com" target="_blank" rel="noopener noreferrer"
+           className="text-indigo-400 hover:text-indigo-600 underline">
           Algorand
         </a>{' '}
         · Zero-Knowledge Proofs · DPDP Act Compliant

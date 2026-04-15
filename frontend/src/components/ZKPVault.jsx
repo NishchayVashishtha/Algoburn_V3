@@ -21,8 +21,8 @@ export default function ZKPVault({ email, onSuccess, onError }) {
     }
 
     try {
-      const txId = await mintConsent()
-      onSuccess(txId)
+      const { txId, assetId } = await mintConsent()
+      onSuccess({ txId, assetId })
     } catch (err) {
       console.error(err)
       onError(err.message || 'Transaction failed. Check your .env configuration.')

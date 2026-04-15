@@ -1,0 +1,5 @@
+[33m1174ef1[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m t push -u origin main Merge branch 'main' of https://github.com/NishchayVashishtha/algoburn-dpdp
+[33me3659c9[m feat: AlgoBurn frontend - React + Vite + Tailwind + Algorand
+[33mbc13ed5[m[33m ([m[1;31morigin/main[m[33m)[m feat: organized project structure with core modules
+[33m6d6e63c[m Cleaned up Daksh's folder
+[33m850d279[m feat: Added AI Agent listener for App ID 758657427 and requirements

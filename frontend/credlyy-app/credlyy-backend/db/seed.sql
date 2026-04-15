@@ -1,0 +1,57 @@
+-- Seed users (passwords are bcrypt of 'password123')
+-- Hash: $2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi = 'password'
+-- Using pre-hashed value for 'pass123'
+
+INSERT INTO users (name, email, password, role, pan, monthly_income, bank_statement, consent_status, purged) VALUES
+('Rahul Sharma',     'rahul@credlyy.in',   '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'ABCPS1234R', 55000,  'stmt_rahul.pdf',   'ACTIVE', FALSE),
+('Priya Verma',      'priya@credlyy.in',   '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'BVZPV5678K', 82000,  'stmt_priya.pdf',   'ACTIVE', FALSE),
+('Arjun Mehta',      'arjun@credlyy.in',   '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'CQRAM9012X', 45000,  'stmt_arjun.pdf',   'ACTIVE', FALSE),
+('Sneha Iyer',       'sneha@credlyy.in',   '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'DXPSI3456Y', 67000,  'stmt_sneha.pdf',   'ACTIVE', FALSE),
+('Vikram Nair',      'vikram@credlyy.in',  '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'EYPVN7890Z', 91000,  'stmt_vikram.pdf',  'ACTIVE', FALSE),
+('Ananya Bose',      'ananya@credlyy.in',  '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'FZQAB2345A', 38000,  'stmt_ananya.pdf',  'ACTIVE', FALSE),
+('Rohan Gupta',      'rohan@credlyy.in',   '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'GARQG6789B', 72000,  'stmt_rohan.pdf',   'ACTIVE', FALSE),
+('Kavya Reddy',      'kavya@credlyy.in',   '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'HBSRR1234C', 53000,  'stmt_kavya.pdf',   'ACTIVE', FALSE),
+('Aditya Joshi',     'aditya@credlyy.in',  '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'ICTAJ5678D', 88000,  'stmt_aditya.pdf',  'ACTIVE', FALSE),
+('Meera Pillai',     'meera@credlyy.in',   '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'JDUBP9012E', 61000,  'stmt_meera.pdf',   'ACTIVE', FALSE),
+('Karan Singh',      'karan@credlyy.in',   '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'KEVCS3456F', 47000,  'stmt_karan.pdf',   'ACTIVE', FALSE),
+('Divya Menon',      'divya@credlyy.in',   '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'LFWDM7890G', 76000,  'stmt_divya.pdf',   'ACTIVE', FALSE),
+('Nikhil Patel',     'nikhil@credlyy.in',  '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'MGXEN2345H', 59000,  'stmt_nikhil.pdf',  'ACTIVE', FALSE),
+('Pooja Sharma',     'pooja@credlyy.in',   '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'NHYFO6789I', 43000,  'stmt_pooja.pdf',   'ACTIVE', FALSE),
+('Suresh Kumar',     'suresh@credlyy.in',  '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'OIZGK1234J', 95000,  'stmt_suresh.pdf',  'ACTIVE', FALSE),
+('Lakshmi Rao',      'lakshmi@credlyy.in', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'PJAHL5678K', 64000,  'stmt_lakshmi.pdf', 'ACTIVE', FALSE),
+('Amit Tiwari',      'amit@credlyy.in',    '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'QKBIM9012L', 51000,  'stmt_amit.pdf',    'ACTIVE', FALSE),
+('Ritu Agarwal',     'ritu@credlyy.in',    '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'RLCJN3456M', 78000,  'stmt_ritu.pdf',    'ACTIVE', FALSE),
+('Sanjay Dubey',     'sanjay@credlyy.in',  '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'SMDKO7890N', 42000,  'stmt_sanjay.pdf',  'ACTIVE', FALSE),
+('Nisha Kapoor',     'nisha@credlyy.in',   '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'TNELP2345O', 86000,  'stmt_nisha.pdf',   'ACTIVE', FALSE),
+('Deepak Chauhan',   'deepak@credlyy.in',  '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'UOFMQ6789P', 57000,  'stmt_deepak.pdf',  'ACTIVE', FALSE),
+('Sunita Yadav',     'sunita@credlyy.in',  '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'VPGNR1234Q', 69000,  'stmt_sunita.pdf',  'ACTIVE', FALSE),
+('Rajesh Mishra',    'rajesh@credlyy.in',  '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'WQHOS5678R', 48000,  'stmt_rajesh.pdf',  'ACTIVE', FALSE),
+('Geeta Pandey',     'geeta@credlyy.in',   '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_USER', 'XRIPT9012S', 73000,  'stmt_geeta.pdf',   'ACTIVE', FALSE),
+('Admin User',       'admin@credlyy.in',   '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LkMof6Sn5/u', 'ROLE_ADMIN', NULL, NULL, NULL, 'ACTIVE', FALSE);
+
+-- Seed loans (user IDs 1-24 are ROLE_USER)
+INSERT INTO loans (user_id, amount, status, next_payment, credit_score) VALUES
+(1,  50000,  'Approved', '2026-05-15', 742),
+(2,  120000, 'Pending',  NULL,         698),
+(3,  75000,  'Approved', '2026-05-20', 715),
+(4,  200000, 'Approved', '2026-06-01', 761),
+(5,  35000,  'Rejected', NULL,         612),
+(6,  90000,  'Pending',  NULL,         681),
+(7,  150000, 'Approved', '2026-05-25', 733),
+(8,  60000,  'Approved', '2026-06-10', 720),
+(9,  250000, 'Pending',  NULL,         705),
+(10, 45000,  'Approved', '2026-05-18', 748),
+(11, 80000,  'Rejected', NULL,         598),
+(12, 175000, 'Approved', '2026-06-05', 756),
+(13, 55000,  'Pending',  NULL,         672),
+(14, 30000,  'Approved', '2026-05-22', 710),
+(15, 300000, 'Approved', '2026-06-15', 778),
+(16, 95000,  'Pending',  NULL,         689),
+(17, 40000,  'Approved', '2026-05-28', 724),
+(18, 130000, 'Approved', '2026-06-08', 739),
+(19, 70000,  'Rejected', NULL,         625),
+(20, 220000, 'Approved', '2026-06-12', 762),
+(21, 85000,  'Pending',  NULL,         694),
+(22, 110000, 'Approved', '2026-05-30', 731),
+(23, 65000,  'Approved', '2026-06-03', 717),
+(24, 180000, 'Pending',  NULL,         703);

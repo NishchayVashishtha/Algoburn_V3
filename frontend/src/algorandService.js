@@ -1,9 +1,9 @@
 import algosdk from 'algosdk'
 
-// ── Algod client (TestNet via AlgoNode, no API key needed) ──────────────────
+// ── Algod client (TestNet via AlgoNode) ─────────────────────────────────────
 const algodClient = new algosdk.Algodv2('', 'https://testnet-api.algonode.cloud', '')
 
-// ── Relayer account (custodial – never exposed to the end user) ─────────────
+// ── Relayer account (custodial – never shown to the user) ───────────────────
 function getRelayerAccount() {
   const mnemonic = import.meta.env.VITE_RELAYER_MNEMONIC
   if (!mnemonic || mnemonic.includes('your_25_word')) {
@@ -12,105 +12,99 @@ function getRelayerAccount() {
   return algosdk.mnemonicToSecretKey(mnemonic)
 }
 
-// ── Wait for a transaction to be confirmed ──────────────────────────────────
-async function waitForConfirmation(txId, maxRounds = 10) {
-  const status = await algodClient.status().do()
-  let lastRound = status['last-round']
-
-  for (let i = 0; i < maxRounds; i++) {
-    const pendingInfo = await algodClient
-      .pendingTransactionInformation(txId)
-      .do()
-
-    if (pendingInfo['confirmed-round'] && pendingInfo['confirmed-round'] > 0) {
-      return pendingInfo
-    }
-
-    lastRound++
-    await algodClient.statusAfterBlock(lastRound).do()
-  }
-
-  throw new Error(`Transaction ${txId} not confirmed after ${maxRounds} rounds`)
-}
-
-// ── ABI-style app call (used by mint_consent — returns asset ID) ─────────────
-export async function mintConsent() {
-  const relayer = getRelayerAccount()
-  const appId = parseInt(import.meta.env.VITE_APP_ID, 10)
-
-  const mintMethod = new algosdk.ABIMethod({
-    name: 'mint_consent',
-    args: [],
-    returns: { type: 'uint64' },
-  })
-
-  const atc = new algosdk.AtomicTransactionComposer()
+async function prepareATC(relayer, fee = 3000) {
+  const atc    = new algosdk.AtomicTransactionComposer()
   const signer = algosdk.makeBasicAccountTransactionSigner(relayer)
   const params = await algodClient.getTransactionParams().do()
-
-  // Cover outer + inner transaction fees
   params.flatFee = true
-  params.fee = 3000
+  params.fee     = fee          // covers outer + inner txn fees
+  return { atc, signer, params }
+}
+
+// ── mint_consent() → returns { txId, assetId } ──────────────────────────────
+export async function mintConsent() {
+  const relayer = getRelayerAccount()
+  const appId   = parseInt(import.meta.env.VITE_APP_ID, 10)
+
+  const { atc, signer, params } = await prepareATC(relayer, 3000)
 
   atc.addMethodCall({
-    appID: appId,
-    method: mintMethod,
+    appID:      appId,
+    method:     new algosdk.ABIMethod({ name: 'mint_consent', args: [], returns: { type: 'uint64' } }),
     methodArgs: [],
-    sender: relayer.addr,
+    sender:     relayer.addr,
+    signer,
+    suggestedParams: params,
+  })
+
+  const result  = await atc.execute(algodClient, 4)
+  const assetId = Number(result.methodResults[0].returnValue)
+  const txId    = result.txIDs[0]
+
+  return { txId, assetId }
+}
+
+// ── claim_consent(asset_id) → void ──────────────────────────────────────────
+export async function claimConsent(assetId) {
+  const relayer = getRelayerAccount()
+  const appId   = parseInt(import.meta.env.VITE_APP_ID, 10)
+
+  // ── Step 1: opt-in (separate tx, must confirm first) ──────────────────────
+  const optInParams = await algodClient.getTransactionParams().do()
+  const optInTxn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+    sender:      relayer.addr,
+    receiver:    relayer.addr,
+    assetIndex:  assetId,
+    amount:      0,
+    suggestedParams: { ...optInParams, flatFee: true, fee: 1000 },
+  })
+  const signedOptIn = optInTxn.signTxn(relayer.sk)
+  const { txid: optInTxId } = await algodClient.sendRawTransaction(signedOptIn).do()
+  await algosdk.waitForConfirmation(algodClient, optInTxId, 10)
+
+  // ── Step 2: claim_consent ABI call ─────────────────────────────────────────
+  const { atc, signer, params } = await prepareATC(relayer, 2000)
+
+  atc.addMethodCall({
+    appID:  appId,
+    method: new algosdk.ABIMethod({
+      name:    'claim_consent',
+      args:    [{ type: 'uint64', name: 'asset_id' }],
+      returns: { type: 'void' },
+    }),
+    methodArgs:    [assetId],
+    // 🔥 FIX: 'foreignAssets' ki jagah 'appForeignAssets' use hota hai ATC mein
+    appForeignAssets: [assetId], 
+    sender:        relayer.addr,
+    signer,
+    suggestedParams: params,
+  })
+
+  await atc.execute(algodClient, 4)
+}
+
+// ── burn_consent(asset_id) → returns txId ───────────────────────────────────
+export async function burnConsent(assetId) {
+  const relayer = getRelayerAccount()
+  const appId   = parseInt(import.meta.env.VITE_APP_ID, 10)
+
+  const { atc, signer, params } = await prepareATC(relayer, 3000)
+
+  atc.addMethodCall({
+    appID:  appId,
+    method: new algosdk.ABIMethod({
+      name:    'burn_consent',
+      args:    [{ type: 'uint64', name: 'asset_id' }],
+      returns: { type: 'void' },
+    }),
+    methodArgs:    [assetId],
+    // 🔥 FIX: 'foreignAssets' ki jagah 'appForeignAssets' use hota hai ATC mein
+    appForeignAssets: [assetId],   
+    sender:        relayer.addr,
     signer,
     suggestedParams: params,
   })
 
   const result = await atc.execute(algodClient, 4)
   return result.txIDs[0]
-}
-
-// ── NoOp app call (used by burn_consent) ────────────────────────────────────
-export async function burnConsent() {
-  const relayer = getRelayerAccount()
-  const appId = parseInt(import.meta.env.VITE_APP_ID, 10)
-
-  const params = await algodClient.getTransactionParams().do()
-
-  const txn = algosdk.makeApplicationNoOpTxnFromObject({
-    sender: relayer.addr,
-    appIndex: appId,
-    appArgs: [new TextEncoder().encode('burn_consent')],
-    suggestedParams: params,
-  })
-
-  const signedTxn = txn.signTxn(relayer.sk)
-  const { txid } = await algodClient.sendRawTransaction(signedTxn).do()
-  await waitForConfirmation(txid)
-  return txid
-}
-
-// ── Enterprise API: purge user data after burn ───────────────────────────────
-// userId is the enterprise DB identifier (e.g. "user_001").
-// In a real system this would come from your auth layer; here we accept it
-// as a parameter so the caller can pass whatever mapping they have.
-export async function purgeEnterpriseData(userId) {
-  const baseUrl = import.meta.env.VITE_ENTERPRISE_API_URL
-  const apiKey  = import.meta.env.VITE_ENTERPRISE_API_KEY
-
-  if (!baseUrl) {
-    throw new Error('VITE_ENTERPRISE_API_URL is not set in .env')
-  }
-
-  const res = await fetch(`${baseUrl}/api/v1/delete-user-data`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey || '',
-    },
-    body: JSON.stringify({ userId }),
-  })
-
-  const data = await res.json()
-
-  if (!res.ok) {
-    throw new Error(data.message || `Enterprise API error: ${res.status}`)
-  }
-
-  return data
 }
