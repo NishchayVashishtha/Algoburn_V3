@@ -1,0 +1,60 @@
+# ========================
+# 🚨 SECURITY (SABSE ZAROORI) 🚨
+# ========================
+**/.env*
+**/*.pem
+**/*.key
+
+# ========================
+# PYTHON (Smart Contracts & Agent API)
+# ========================
+**/__pycache__/
+**/*.py[cod]
+**/.venv/
+**/venv/
+**/.pytest_cache/
+
+# ========================
+# NODE.JS / REACT (Frontend)
+# ========================
+**/node_modules/
+**/build/
+**/dist/
+**/npm-debug.log*
+
+# ========================
+# ALGOKIT & VIBEKIT TOOLS
+# ========================
+**/.algokit/
+**/.vibekit/
+**/.puya_cache/
+
+# ========================
+# OS & IDE FILES
+# ========================
+**/.vscode/
+**/.DS_Store
+
+# Dependencies
+node_modules/
+dist/
+build/
+
+# Environment Variables (CRITICAL!)
+.env
+.env.local
+.env.development.local
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+env/
+
+# IDE & OS
+.DS_Store
+.vscode/
+.idea/git add algoburn-sdk/
+git add credlyy-app/
+git add .gitignore

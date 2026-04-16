@@ -1,0 +1,1031 @@
+{
+  "version": 3,
+  "sources": [
+    "algo_burn.py"
+  ],
+  "mappings": ";;;;;;;AAcA;;AAAA;AAAA;AAAA;;AAAA;;;AAAA;;;;;;;;;;;;;;;;;AAAA;;;AAAA;;;;;;;;AAAA;AA6CK;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAEY;;AAET;AACe;;AAAA;AAEI;;AACF;;;;;;;;;;;;AAJjB;;;AAKQ;;;AALR;AAQA;AAEY;;AACA;;;;;;;;;;;;AAHZ;;;;AAMQ;;;AANR;AAUI;AADJ;;;;;;AAAA;AAAA;AAAA;AArBH;AAAA;AAZA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAEY;;AAET;AACe;AAAA;AACE;;AAEA;;;;;;;;;;;AAJjB;;;AAKQ;;;AALR;AAJH;AAAA;AAxBY;AAMG;;AACA;;;;;;;;;;AAFJ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AADO;;;;;;;;;;;;;;;;;;;;;;;;AADD;;;;;;;;;;;AADD;;;AADH;;;AADD;;;;AAUD;;;AAVC;;;AAeT;AAEmB;;AACF;;;;;;;;AAHjB;;;AAIQ;;;AAJR;AAOO;AA1BV;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AALL;;;;;;AAAA;;;AAAA;;;;AAAA;AACK;AAAA",
+  "op_pc_offset": 0,
+  "pc_events": {
+    "1": {
+      "subroutine": "algopy.arc4.ARC4Contract.approval_program",
+      "params": {},
+      "block": "main",
+      "stack_in": [],
+      "op": "intcblock 1 0 4 8"
+    },
+    "7": {
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%0#1"
+      ],
+      "stack_out": [
+        "tmp%0#1"
+      ]
+    },
+    "9": {
+      "op": "!",
+      "defined_out": [
+        "tmp%1#0"
+      ],
+      "stack_out": [
+        "tmp%1#0"
+      ]
+    },
+    "10": {
+      "op": "assert",
+      "stack_out": []
+    },
+    "11": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0"
+      ]
+    },
+    "13": {
+      "op": "bz main_create_NoOp@7",
+      "stack_out": []
+    },
+    "16": {
+      "op": "pushbytess 0x3ba0c5ef 0xfc879781 0x64b695d5 // method \"mint_consent()uint64\", method \"claim_consent(uint64)void\", method \"burn_consent(uint64)void\"",
+      "defined_out": [
+        "Method(burn_consent(uint64)void)",
+        "Method(claim_consent(uint64)void)",
+        "Method(mint_consent()uint64)"
+      ],
+      "stack_out": [
+        "Method(mint_consent()uint64)",
+        "Method(claim_consent(uint64)void)",
+        "Method(burn_consent(uint64)void)"
+      ]
+    },
+    "33": {
+      "op": "txna ApplicationArgs 0",
+      "defined_out": [
+        "Method(burn_consent(uint64)void)",
+        "Method(claim_consent(uint64)void)",
+        "Method(mint_consent()uint64)",
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "Method(mint_consent()uint64)",
+        "Method(claim_consent(uint64)void)",
+        "Method(burn_consent(uint64)void)",
+        "tmp%4#0"
+      ]
+    },
+    "36": {
+      "op": "match main_mint_consent_route@3 main_claim_consent_route@4 main_burn_consent_route@5",
+      "stack_out": []
+    },
+    "44": {
+      "op": "err"
+    },
+    "45": {
+      "block": "main_burn_consent_route@5",
+      "stack_in": [],
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "asset_id#0"
+      ],
+      "stack_out": [
+        "asset_id#0"
+      ]
+    },
+    "48": {
+      "op": "dup",
+      "defined_out": [
+        "asset_id#0",
+        "asset_id#0 (copy)"
+      ],
+      "stack_out": [
+        "asset_id#0",
+        "asset_id#0 (copy)"
+      ]
+    },
+    "49": {
+      "op": "len",
+      "defined_out": [
+        "asset_id#0",
+        "len%0#0"
+      ],
+      "stack_out": [
+        "asset_id#0",
+        "len%0#0"
+      ]
+    },
+    "50": {
+      "op": "intc_3 // 8",
+      "defined_out": [
+        "8",
+        "asset_id#0",
+        "len%0#0"
+      ],
+      "stack_out": [
+        "asset_id#0",
+        "len%0#0",
+        "8"
+      ]
+    },
+    "51": {
+      "op": "==",
+      "defined_out": [
+        "asset_id#0",
+        "eq%0#0"
+      ],
+      "stack_out": [
+        "asset_id#0",
+        "eq%0#0"
+      ]
+    },
+    "52": {
+      "error": "invalid number of bytes for arc4.uint64",
+      "op": "assert // invalid number of bytes for arc4.uint64",
+      "stack_out": [
+        "asset_id#0"
+      ]
+    },
+    "53": {
+      "op": "txn Sender",
+      "defined_out": [
+        "asset_id#0",
+        "sender#0"
+      ],
+      "stack_out": [
+        "asset_id#0",
+        "sender#0"
+      ]
+    },
+    "55": {
+      "op": "itxn_begin"
+    },
+    "56": {
+      "op": "dig 1",
+      "stack_out": [
+        "asset_id#0",
+        "sender#0",
+        "asset_id#0 (copy)"
+      ]
+    },
+    "58": {
+      "op": "btoi",
+      "defined_out": [
+        "asset_id#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "sender#0"
+      ],
+      "stack_out": [
+        "asset_id#0",
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0"
+      ]
+    },
+    "59": {
+      "op": "global CurrentApplicationAddress",
+      "defined_out": [
+        "asset_id#0",
+        "inner_txn_params%0%%param_AssetReceiver_idx_0#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "sender#0"
+      ],
+      "stack_out": [
+        "asset_id#0",
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "inner_txn_params%0%%param_AssetReceiver_idx_0#0"
+      ]
+    },
+    "61": {
+      "op": "intc_0 // 1",
+      "defined_out": [
+        "1",
+        "asset_id#0",
+        "inner_txn_params%0%%param_AssetReceiver_idx_0#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "sender#0"
+      ],
+      "stack_out": [
+        "asset_id#0",
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "inner_txn_params%0%%param_AssetReceiver_idx_0#0",
+        "1"
+      ]
+    },
+    "62": {
+      "op": "itxn_field AssetAmount",
+      "stack_out": [
+        "asset_id#0",
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "inner_txn_params%0%%param_AssetReceiver_idx_0#0"
+      ]
+    },
+    "64": {
+      "op": "itxn_field AssetReceiver",
+      "stack_out": [
+        "asset_id#0",
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0"
+      ]
+    },
+    "66": {
+      "op": "dig 1",
+      "defined_out": [
+        "asset_id#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "sender#0",
+        "sender#0 (copy)"
+      ],
+      "stack_out": [
+        "asset_id#0",
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "sender#0 (copy)"
+      ]
+    },
+    "68": {
+      "op": "itxn_field AssetSender",
+      "stack_out": [
+        "asset_id#0",
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0"
+      ]
+    },
+    "70": {
+      "op": "dup",
+      "defined_out": [
+        "asset_id#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0 (copy)",
+        "sender#0"
+      ],
+      "stack_out": [
+        "asset_id#0",
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0 (copy)"
+      ]
+    },
+    "71": {
+      "op": "itxn_field XferAsset",
+      "stack_out": [
+        "asset_id#0",
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0"
+      ]
+    },
+    "73": {
+      "op": "intc_2 // axfer",
+      "defined_out": [
+        "asset_id#0",
+        "axfer",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "sender#0"
+      ],
+      "stack_out": [
+        "asset_id#0",
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "axfer"
+      ]
+    },
+    "74": {
+      "op": "itxn_field TypeEnum",
+      "stack_out": [
+        "asset_id#0",
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0"
+      ]
+    },
+    "76": {
+      "op": "intc_1 // 0",
+      "defined_out": [
+        "0",
+        "asset_id#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "sender#0"
+      ],
+      "stack_out": [
+        "asset_id#0",
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "0"
+      ]
+    },
+    "77": {
+      "op": "itxn_field Fee",
+      "stack_out": [
+        "asset_id#0",
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0"
+      ]
+    },
+    "79": {
+      "op": "itxn_submit"
+    },
+    "80": {
+      "op": "itxn_begin"
+    },
+    "81": {
+      "op": "global CurrentApplicationAddress",
+      "defined_out": [
+        "asset_id#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "inner_txn_params%1%%param_ConfigAssetManager_idx_0#0",
+        "sender#0"
+      ],
+      "stack_out": [
+        "asset_id#0",
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "inner_txn_params%1%%param_ConfigAssetManager_idx_0#0"
+      ]
+    },
+    "83": {
+      "op": "dupn 3",
+      "defined_out": [
+        "asset_id#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "inner_txn_params%1%%param_ConfigAssetClawback_idx_0#0",
+        "inner_txn_params%1%%param_ConfigAssetFreeze_idx_0#0",
+        "inner_txn_params%1%%param_ConfigAssetManager_idx_0#0",
+        "inner_txn_params%1%%param_ConfigAssetReserve_idx_0#0",
+        "sender#0"
+      ],
+      "stack_out": [
+        "asset_id#0",
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "inner_txn_params%1%%param_ConfigAssetManager_idx_0#0",
+        "inner_txn_params%1%%param_ConfigAssetReserve_idx_0#0",
+        "inner_txn_params%1%%param_ConfigAssetFreeze_idx_0#0",
+        "inner_txn_params%1%%param_ConfigAssetClawback_idx_0#0"
+      ]
+    },
+    "85": {
+      "op": "itxn_field ConfigAssetClawback",
+      "stack_out": [
+        "asset_id#0",
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "inner_txn_params%1%%param_ConfigAssetManager_idx_0#0",
+        "inner_txn_params%1%%param_ConfigAssetReserve_idx_0#0",
+        "inner_txn_params%1%%param_ConfigAssetFreeze_idx_0#0"
+      ]
+    },
+    "87": {
+      "op": "itxn_field ConfigAssetFreeze",
+      "stack_out": [
+        "asset_id#0",
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "inner_txn_params%1%%param_ConfigAssetManager_idx_0#0",
+        "inner_txn_params%1%%param_ConfigAssetReserve_idx_0#0"
+      ]
+    },
+    "89": {
+      "op": "itxn_field ConfigAssetReserve",
+      "stack_out": [
+        "asset_id#0",
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "inner_txn_params%1%%param_ConfigAssetManager_idx_0#0"
+      ]
+    },
+    "91": {
+      "op": "itxn_field ConfigAssetManager",
+      "stack_out": [
+        "asset_id#0",
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0"
+      ]
+    },
+    "93": {
+      "op": "itxn_field ConfigAsset",
+      "stack_out": [
+        "asset_id#0",
+        "sender#0"
+      ]
+    },
+    "95": {
+      "op": "pushint 3 // acfg",
+      "defined_out": [
+        "acfg",
+        "asset_id#0",
+        "sender#0"
+      ],
+      "stack_out": [
+        "asset_id#0",
+        "sender#0",
+        "acfg"
+      ]
+    },
+    "97": {
+      "op": "itxn_field TypeEnum",
+      "stack_out": [
+        "asset_id#0",
+        "sender#0"
+      ]
+    },
+    "99": {
+      "op": "intc_1 // 0",
+      "stack_out": [
+        "asset_id#0",
+        "sender#0",
+        "0"
+      ]
+    },
+    "100": {
+      "op": "itxn_field Fee",
+      "stack_out": [
+        "asset_id#0",
+        "sender#0"
+      ]
+    },
+    "102": {
+      "op": "itxn_submit"
+    },
+    "103": {
+      "op": "concat",
+      "defined_out": [
+        "aggregate%head%1#0"
+      ],
+      "stack_out": [
+        "aggregate%head%1#0"
+      ]
+    },
+    "104": {
+      "op": "pushbytes 0x6f78e9a6 // method \"ConsentRevoked(uint64,address)\"",
+      "defined_out": [
+        "Method(ConsentRevoked(uint64,address))",
+        "aggregate%head%1#0"
+      ],
+      "stack_out": [
+        "aggregate%head%1#0",
+        "Method(ConsentRevoked(uint64,address))"
+      ]
+    },
+    "110": {
+      "op": "swap",
+      "stack_out": [
+        "Method(ConsentRevoked(uint64,address))",
+        "aggregate%head%1#0"
+      ]
+    },
+    "111": {
+      "op": "concat",
+      "defined_out": [
+        "event%0#0"
+      ],
+      "stack_out": [
+        "event%0#0"
+      ]
+    },
+    "112": {
+      "op": "log",
+      "stack_out": []
+    },
+    "113": {
+      "op": "intc_0 // 1",
+      "stack_out": [
+        "1"
+      ]
+    },
+    "114": {
+      "op": "return",
+      "stack_out": []
+    },
+    "115": {
+      "block": "main_claim_consent_route@4",
+      "stack_in": [],
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "asset_id#0"
+      ],
+      "stack_out": [
+        "asset_id#0"
+      ]
+    },
+    "118": {
+      "op": "dup",
+      "defined_out": [
+        "asset_id#0",
+        "asset_id#0 (copy)"
+      ],
+      "stack_out": [
+        "asset_id#0",
+        "asset_id#0 (copy)"
+      ]
+    },
+    "119": {
+      "op": "len",
+      "defined_out": [
+        "asset_id#0",
+        "len%0#0"
+      ],
+      "stack_out": [
+        "asset_id#0",
+        "len%0#0"
+      ]
+    },
+    "120": {
+      "op": "intc_3 // 8",
+      "defined_out": [
+        "8",
+        "asset_id#0",
+        "len%0#0"
+      ],
+      "stack_out": [
+        "asset_id#0",
+        "len%0#0",
+        "8"
+      ]
+    },
+    "121": {
+      "op": "==",
+      "defined_out": [
+        "asset_id#0",
+        "eq%0#0"
+      ],
+      "stack_out": [
+        "asset_id#0",
+        "eq%0#0"
+      ]
+    },
+    "122": {
+      "error": "invalid number of bytes for arc4.uint64",
+      "op": "assert // invalid number of bytes for arc4.uint64",
+      "stack_out": [
+        "asset_id#0"
+      ]
+    },
+    "123": {
+      "op": "txn Sender",
+      "defined_out": [
+        "asset_id#0",
+        "sender#0"
+      ],
+      "stack_out": [
+        "asset_id#0",
+        "sender#0"
+      ]
+    },
+    "125": {
+      "op": "itxn_begin"
+    },
+    "126": {
+      "op": "swap",
+      "stack_out": [
+        "sender#0",
+        "asset_id#0"
+      ]
+    },
+    "127": {
+      "op": "btoi",
+      "defined_out": [
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "sender#0"
+      ],
+      "stack_out": [
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0"
+      ]
+    },
+    "128": {
+      "op": "global CurrentApplicationAddress",
+      "defined_out": [
+        "inner_txn_params%0%%param_AssetSender_idx_0#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "sender#0"
+      ],
+      "stack_out": [
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "inner_txn_params%0%%param_AssetSender_idx_0#0"
+      ]
+    },
+    "130": {
+      "op": "intc_0 // 1",
+      "defined_out": [
+        "1",
+        "inner_txn_params%0%%param_AssetSender_idx_0#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "sender#0"
+      ],
+      "stack_out": [
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "inner_txn_params%0%%param_AssetSender_idx_0#0",
+        "1"
+      ]
+    },
+    "131": {
+      "op": "itxn_field AssetAmount",
+      "stack_out": [
+        "sender#0",
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "inner_txn_params%0%%param_AssetSender_idx_0#0"
+      ]
+    },
+    "133": {
+      "op": "uncover 2",
+      "stack_out": [
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "inner_txn_params%0%%param_AssetSender_idx_0#0",
+        "sender#0"
+      ]
+    },
+    "135": {
+      "op": "itxn_field AssetReceiver",
+      "stack_out": [
+        "inner_txn_params%0%%param_XferAsset_idx_0#0",
+        "inner_txn_params%0%%param_AssetSender_idx_0#0"
+      ]
+    },
+    "137": {
+      "op": "itxn_field AssetSender",
+      "stack_out": [
+        "inner_txn_params%0%%param_XferAsset_idx_0#0"
+      ]
+    },
+    "139": {
+      "op": "itxn_field XferAsset",
+      "stack_out": []
+    },
+    "141": {
+      "op": "intc_2 // axfer",
+      "defined_out": [
+        "axfer"
+      ],
+      "stack_out": [
+        "axfer"
+      ]
+    },
+    "142": {
+      "op": "itxn_field TypeEnum",
+      "stack_out": []
+    },
+    "144": {
+      "op": "intc_1 // 0",
+      "defined_out": [
+        "0"
+      ],
+      "stack_out": [
+        "0"
+      ]
+    },
+    "145": {
+      "op": "itxn_field Fee",
+      "stack_out": []
+    },
+    "147": {
+      "op": "itxn_submit"
+    },
+    "148": {
+      "op": "intc_0 // 1",
+      "stack_out": [
+        "1"
+      ]
+    },
+    "149": {
+      "op": "return",
+      "stack_out": []
+    },
+    "150": {
+      "block": "main_mint_consent_route@3",
+      "stack_in": [],
+      "op": "itxn_begin"
+    },
+    "151": {
+      "op": "global CurrentApplicationAddress",
+      "defined_out": [
+        "inner_txn_params%0%%param_ConfigAssetManager_idx_0#0"
+      ],
+      "stack_out": [
+        "inner_txn_params%0%%param_ConfigAssetManager_idx_0#0"
+      ]
+    },
+    "153": {
+      "op": "dupn 3",
+      "defined_out": [
+        "inner_txn_params%0%%param_ConfigAssetClawback_idx_0#0",
+        "inner_txn_params%0%%param_ConfigAssetFreeze_idx_0#0",
+        "inner_txn_params%0%%param_ConfigAssetManager_idx_0#0",
+        "inner_txn_params%0%%param_ConfigAssetReserve_idx_0#0"
+      ],
+      "stack_out": [
+        "inner_txn_params%0%%param_ConfigAssetManager_idx_0#0",
+        "inner_txn_params%0%%param_ConfigAssetReserve_idx_0#0",
+        "inner_txn_params%0%%param_ConfigAssetFreeze_idx_0#0",
+        "inner_txn_params%0%%param_ConfigAssetClawback_idx_0#0"
+      ]
+    },
+    "155": {
+      "op": "itxn_field ConfigAssetClawback",
+      "stack_out": [
+        "inner_txn_params%0%%param_ConfigAssetManager_idx_0#0",
+        "inner_txn_params%0%%param_ConfigAssetReserve_idx_0#0",
+        "inner_txn_params%0%%param_ConfigAssetFreeze_idx_0#0"
+      ]
+    },
+    "157": {
+      "op": "itxn_field ConfigAssetFreeze",
+      "stack_out": [
+        "inner_txn_params%0%%param_ConfigAssetManager_idx_0#0",
+        "inner_txn_params%0%%param_ConfigAssetReserve_idx_0#0"
+      ]
+    },
+    "159": {
+      "op": "itxn_field ConfigAssetReserve",
+      "stack_out": [
+        "inner_txn_params%0%%param_ConfigAssetManager_idx_0#0"
+      ]
+    },
+    "161": {
+      "op": "itxn_field ConfigAssetManager",
+      "stack_out": []
+    },
+    "163": {
+      "op": "pushbytes 0x68747470733a2f2f616c676f6275726e2e696f2f636f6e73656e742d6e6674",
+      "defined_out": [
+        "0x68747470733a2f2f616c676f6275726e2e696f2f636f6e73656e742d6e6674"
+      ],
+      "stack_out": [
+        "0x68747470733a2f2f616c676f6275726e2e696f2f636f6e73656e742d6e6674"
+      ]
+    },
+    "196": {
+      "op": "itxn_field ConfigAssetURL",
+      "stack_out": []
+    },
+    "198": {
+      "op": "pushbytes 0x416c676f4275726e20436f6e73656e74204e4654",
+      "defined_out": [
+        "0x416c676f4275726e20436f6e73656e74204e4654"
+      ],
+      "stack_out": [
+        "0x416c676f4275726e20436f6e73656e74204e4654"
+      ]
+    },
+    "220": {
+      "op": "itxn_field ConfigAssetName",
+      "stack_out": []
+    },
+    "222": {
+      "op": "pushbytes 0x434f4e53454e54",
+      "defined_out": [
+        "0x434f4e53454e54"
+      ],
+      "stack_out": [
+        "0x434f4e53454e54"
+      ]
+    },
+    "231": {
+      "op": "itxn_field ConfigAssetUnitName",
+      "stack_out": []
+    },
+    "233": {
+      "op": "intc_1 // 0",
+      "defined_out": [
+        "0"
+      ],
+      "stack_out": [
+        "0"
+      ]
+    },
+    "234": {
+      "op": "itxn_field ConfigAssetDecimals",
+      "stack_out": []
+    },
+    "236": {
+      "op": "intc_0 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "1"
+      ]
+    },
+    "237": {
+      "op": "itxn_field ConfigAssetTotal",
+      "stack_out": []
+    },
+    "239": {
+      "op": "pushint 3 // acfg",
+      "defined_out": [
+        "acfg"
+      ],
+      "stack_out": [
+        "acfg"
+      ]
+    },
+    "241": {
+      "op": "itxn_field TypeEnum",
+      "stack_out": []
+    },
+    "243": {
+      "op": "intc_1 // 0",
+      "stack_out": [
+        "0"
+      ]
+    },
+    "244": {
+      "op": "itxn_field Fee",
+      "stack_out": []
+    },
+    "246": {
+      "op": "itxn_submit"
+    },
+    "247": {
+      "op": "itxn CreatedAssetID",
+      "defined_out": [
+        "result.CreatedAssetID#0"
+      ],
+      "stack_out": [
+        "result.CreatedAssetID#0"
+      ]
+    },
+    "249": {
+      "op": "itxn_begin"
+    },
+    "250": {
+      "op": "global CurrentApplicationAddress",
+      "defined_out": [
+        "inner_txn_params%1%%param_AssetReceiver_idx_0#0",
+        "result.CreatedAssetID#0"
+      ],
+      "stack_out": [
+        "result.CreatedAssetID#0",
+        "inner_txn_params%1%%param_AssetReceiver_idx_0#0"
+      ]
+    },
+    "252": {
+      "op": "intc_1 // 0",
+      "stack_out": [
+        "result.CreatedAssetID#0",
+        "inner_txn_params%1%%param_AssetReceiver_idx_0#0",
+        "0"
+      ]
+    },
+    "253": {
+      "op": "itxn_field AssetAmount",
+      "stack_out": [
+        "result.CreatedAssetID#0",
+        "inner_txn_params%1%%param_AssetReceiver_idx_0#0"
+      ]
+    },
+    "255": {
+      "op": "itxn_field AssetReceiver",
+      "stack_out": [
+        "result.CreatedAssetID#0"
+      ]
+    },
+    "257": {
+      "op": "dup",
+      "defined_out": [
+        "result.CreatedAssetID#0",
+        "result.CreatedAssetID#0 (copy)"
+      ],
+      "stack_out": [
+        "result.CreatedAssetID#0",
+        "result.CreatedAssetID#0 (copy)"
+      ]
+    },
+    "258": {
+      "op": "itxn_field XferAsset",
+      "stack_out": [
+        "result.CreatedAssetID#0"
+      ]
+    },
+    "260": {
+      "op": "intc_2 // axfer",
+      "defined_out": [
+        "axfer",
+        "result.CreatedAssetID#0"
+      ],
+      "stack_out": [
+        "result.CreatedAssetID#0",
+        "axfer"
+      ]
+    },
+    "261": {
+      "op": "itxn_field TypeEnum",
+      "stack_out": [
+        "result.CreatedAssetID#0"
+      ]
+    },
+    "263": {
+      "op": "intc_1 // 0",
+      "stack_out": [
+        "result.CreatedAssetID#0",
+        "0"
+      ]
+    },
+    "264": {
+      "op": "itxn_field Fee",
+      "stack_out": [
+        "result.CreatedAssetID#0"
+      ]
+    },
+    "266": {
+      "op": "itxn_submit"
+    },
+    "267": {
+      "op": "itob",
+      "defined_out": [
+        "aggregate%val_as_bytes%0#0"
+      ],
+      "stack_out": [
+        "aggregate%val_as_bytes%0#0"
+      ]
+    },
+    "268": {
+      "op": "pushbytes 0x151f7c75",
+      "defined_out": [
+        "0x151f7c75",
+        "aggregate%val_as_bytes%0#0"
+      ],
+      "stack_out": [
+        "aggregate%val_as_bytes%0#0",
+        "0x151f7c75"
+      ]
+    },
+    "274": {
+      "op": "swap",
+      "stack_out": [
+        "0x151f7c75",
+        "aggregate%val_as_bytes%0#0"
+      ]
+    },
+    "275": {
+      "op": "concat",
+      "defined_out": [
+        "tmp%1#2"
+      ],
+      "stack_out": [
+        "tmp%1#2"
+      ]
+    },
+    "276": {
+      "op": "log",
+      "stack_out": []
+    },
+    "277": {
+      "op": "intc_0 // 1",
+      "stack_out": [
+        "1"
+      ]
+    },
+    "278": {
+      "op": "return",
+      "stack_out": []
+    },
+    "279": {
+      "block": "main_create_NoOp@7",
+      "stack_in": [],
+      "op": "pushbytes 0x752c3ac0 // method \"create_application()void\"",
+      "defined_out": [
+        "Method(create_application()void)"
+      ],
+      "stack_out": [
+        "Method(create_application()void)"
+      ]
+    },
+    "285": {
+      "op": "txna ApplicationArgs 0",
+      "defined_out": [
+        "Method(create_application()void)",
+        "tmp%5#0"
+      ],
+      "stack_out": [
+        "Method(create_application()void)",
+        "tmp%5#0"
+      ]
+    },
+    "288": {
+      "op": "match main_create_application_route@8",
+      "stack_out": []
+    },
+    "292": {
+      "op": "err"
+    },
+    "293": {
+      "block": "main_create_application_route@8",
+      "stack_in": [],
+      "op": "intc_0 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "1"
+      ]
+    },
+    "294": {
+      "op": "return",
+      "stack_out": []
+    }
+  }
+}
