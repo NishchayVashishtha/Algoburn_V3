@@ -47,13 +47,17 @@ router.post('/apply-traditional', requireAuth, async (req, res) => {
     // PII is NOT stored in plain text — only a ZKP proof reference
     try {
       const { assetId, txId, explorerUrl } = await sdk.mintConsent(req.user.id)
-      application.assetId      = assetId
+      // Force to plain string — bigint doesn't serialize to JSON
+      application.assetId      = String(assetId)
       application.consentTxId  = txId
       application.explorerUrl  = explorerUrl
       application.consentStatus = 'Blockchain Verified'
       // Store masked PII for audit trail only
-      application.panCard  = `${panCard.slice(0,3)}${'*'.repeat(panCard.length - 4)}${panCard.slice(-1)}`
-      application.aadhaar  = `**** **** ${aadhaar.replace(/\s/g,'').slice(-4)}`
+      const panLen = panCard.length
+      application.panCard  = panLen > 4
+        ? `${panCard.slice(0, 3)}${'*'.repeat(panLen - 4)}${panCard.slice(-1)}`
+        : '***'
+      application.aadhaar  = `**** **** ${aadhaar.replace(/\s/g, '').slice(-4)}`
       console.log(`[CREDLYY$ Phase 2] SBT minted for ${fullName} — Asset: ${assetId}`)
     } catch (err) {
       return res.status(500).json({ message: `AlgoBurn SDK error: ${err.message}` })
@@ -149,6 +153,7 @@ router.post('/:id/revoke-consent', requireAuth, async (req, res) => {
   const app = loanApplications.find(
     a => a.id === req.params.id && a.userId === req.user.id
   )
+  
   if (!app) return res.status(404).json({ message: 'Application not found' })
   if (!app.algoBurnEnabled || !app.assetId)
     return res.status(400).json({ message: 'AlgoBurn not enabled for this application' })
@@ -156,10 +161,24 @@ router.post('/:id/revoke-consent', requireAuth, async (req, res) => {
     return res.status(400).json({ message: 'Cannot revoke consent while loan balance is outstanding' })
 
   try {
-    const { txId, explorerUrl } = await sdk.burnConsent(app.assetId)
+    // 🚨 THE MAGIC FIX: Force the string to become a strict Number
+    const cleanAssetId = Number(app.assetId);
+
+    // Safety check just in case data got corrupted
+    if (isNaN(cleanAssetId)) {
+      console.error(`❌ Data Error: Asset ID is not a number. Raw value: ${app.assetId}`);
+      return res.status(400).json({ message: `Asset ID corrupted: ${app.assetId}` });
+    }
+
+    console.log(`[REVOKE] Cleaned Asset ID = ${cleanAssetId}, type = ${typeof cleanAssetId}`);
+
+    // Pass the pure number to Algorand SDK
+    const { txId, explorerUrl } = await sdk.burnConsent(cleanAssetId)
+    
     const purgedAt           = new Date().toISOString()
     const dpdpComplianceId   = `DPDP-${uuidv4().slice(0,8).toUpperCase()}-${Date.now()}`
 
+    // Purge the local DB fields
     app.consentStatus    = 'Revoked'
     app.burnTxId         = txId
     app.burnExplorerUrl  = explorerUrl
@@ -177,6 +196,8 @@ router.post('/:id/revoke-consent', requireAuth, async (req, res) => {
       assetId:          app.assetId,
     })
   } catch (err) {
+    // Ye catch block ab terminal mein exact error batayega
+    console.error("❌ SDK Burn Error:", err);
     res.status(500).json({ message: `Burn failed: ${err.message}` })
   }
 })

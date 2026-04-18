@@ -12,11 +12,14 @@ router.post('/purge', (req, res) => {
     return res.status(401).json({ message: 'Unauthorized' })
   }
 
-  const { assetId } = req.body
-  if (!assetId) return res.status(400).json({ message: 'assetId is required' })
+  // 🚀 FIX: Accept either assetId OR userId
+  const { assetId, userId } = req.body
+  if (!assetId && !userId) return res.status(400).json({ message: 'assetId or userId is required' })
 
-  const app = loanApplications.find(a => a.assetId === assetId)
-  if (!app) return res.status(404).json({ message: `No application found for assetId: ${assetId}` })
+  // Find the application based on whatever the Agent sends
+  const app = loanApplications.find(a => a.assetId === assetId || a.userId === userId || a.id === userId)
+  
+  if (!app) return res.status(404).json({ message: `No application found for the given ID.` })
 
   // Wipe all sensitive fields
   app.panCard       = '[AI-PURGED]'
@@ -26,11 +29,11 @@ router.post('/purge', (req, res) => {
   app.phone         = '[REDACTED]'
   app.consentStatus = 'AI Purged'
 
-  console.log(`[AlgoBurn Compliance] 🔥 AI Agent purged data for assetId: ${assetId} at ${new Date().toISOString()}`)
+  console.log(`[AlgoBurn Compliance] 🔥 AI Agent purged data for App ID: ${app.id} at ${new Date().toISOString()}`)
 
   res.json({
     status:    'success',
-    message:   `Data purged for assetId: ${assetId}`,
+    message:   `Data completely purged from server.`,
     timestamp: new Date().toISOString(),
   })
 })

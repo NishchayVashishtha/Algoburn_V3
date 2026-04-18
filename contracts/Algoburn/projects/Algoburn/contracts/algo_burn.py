@@ -31,7 +31,6 @@ class AlgoBurn(ARC4Contract):
             reserve=Global.current_application_address,
             freeze=Global.current_application_address,
             clawback=Global.current_application_address,
-            fee=0,
         ).submit()
 
         created_asset_id = result.created_asset.id
@@ -40,7 +39,6 @@ class AlgoBurn(ARC4Contract):
             xfer_asset=created_asset_id,
             asset_receiver=Global.current_application_address,
             asset_amount=0,
-            fee=0,
         ).submit()
 
         return arc4.UInt64(created_asset_id)
@@ -66,7 +64,6 @@ class AlgoBurn(ARC4Contract):
             asset_sender=sender,
             asset_receiver=Global.current_application_address,
             asset_amount=1,
-            fee=0,
         ).submit()
 
         itxn.AssetConfig(
@@ -75,7 +72,6 @@ class AlgoBurn(ARC4Contract):
             reserve=Global.current_application_address,
             freeze=Global.current_application_address,
             clawback=Global.current_application_address,
-            fee=0,
         ).submit()
 
         arc4.emit(
