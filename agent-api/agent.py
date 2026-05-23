@@ -1,15 +1,15 @@
 import time
+import os
 import requests
 from algosdk.v2client import indexer
 
 # ==========================================
 # ⚙️ CONFIGURATION ZONE
 # ==========================================
-APP_ID = 758657427
-INDEXER_URL = "https://testnet-idx.algonode.cloud"
-
-# TODO: Replace this with Paarth's actual API URL (e.g., localhost or ngrok)
-MOCK_API_URL = "https://monologue-squealer-stride.ngrok-free.dev/api/v1/delete-user-data" 
+APP_ID = int(os.getenv('APP_ID', '758657427'))
+INDEXER_URL = os.getenv('INDEXER_URL', 'https://testnet-idx.algonode.cloud')
+ENTERPRISE_API_URL = os.getenv('ENTERPRISE_API_URL', 'http://localhost:3000/api/v1/delete-user-data')
+ENTERPRISE_API_KEY = os.getenv('ENTERPRISE_API_KEY', 'algoburn-dev-key')
 
 # Initialize the Algorand Indexer (Read-only node)
 myindexer = indexer.IndexerClient(indexer_token="", indexer_address=INDEXER_URL)
@@ -26,6 +26,7 @@ def get_current_round():
 print("=====================================================")
 print("🤖 ALGOBURN AI AGENT ACTIVATED")
 print(f"📡 Monitoring App ID {APP_ID} on Algorand TestNet...")
+print(f"🔗 Enterprise API: {ENTERPRISE_API_URL}")
 print("=====================================================\n")
 
 last_round = get_current_round()
@@ -59,35 +60,35 @@ while True:
             foreign_assets = app_call.get('foreign-assets', [])
 
             if foreign_assets:
-                target_asset_id = foreign_assets[0] # Yehi wo NFT ID hai jo burn hua
+                target_asset_id = foreign_assets[0] # This is the NFT ID that was burned
         
-            print(f"\n🚨 ALERT: Burn Detected for Asset ID: {target_asset_id}")
+                print(f"\n🚨 ALERT: Burn Detected for Asset ID: {target_asset_id}")
+                print(f"🧠 AI Agent analyzing payload... 'ConsentRevoked' event verified.")
+                print(f"🔥 Triggering Enterprise Data Deletion Protocol...")
 
-            # Now send the SPECIFIC asset_id to Credlyy Backend
-            try:
-                payload = {
-                    "assetId": target_asset_id,
-                    "proof": tx_id,
-                    "timestamp": time.time()
-                }
-                api_res = requests.post(MOCK_API_URL, json=payload)
-                print(f"🏢 Credlyy Response: {api_res.status_code} - User {target_asset_id} Purged.")
-            except Exception as e:
-                print(f"⚠️ Failed to alert Credlyy: {e}")
+                # Now send the SPECIFIC asset_id to Enterprise Backend
+                try:
+                    payload = {
+                        "userId": f"user_{str(target_asset_id)[-3:]}",  # Map asset to user
+                        "assetId": target_asset_id,
+                        "proof": tx_id,
+                        "timestamp": time.time()
+                    }
+                    headers = {
+                        "Content-Type": "application/json",
+                        "x-api-key": ENTERPRISE_API_KEY
+                    }
+                    api_res = requests.post(ENTERPRISE_API_URL, json=payload, headers=headers)
+                    
+                    if api_res.status_code == 200:
+                        print(f"🏢 Enterprise Response: {api_res.status_code} - User Data Purged Successfully.")
+                    else:
+                        print(f"⚠️ Enterprise Response: {api_res.status_code} - {api_res.text}")
+                        
+                except Exception as e:
+                    print(f"⚠️ Failed to alert Enterprise API: {e}")
 
-            # The Hackathon Magic Trigger
-            print(f"\n🚨 ALERT: Smart Contract Interaction Detected! (TxID: {tx_id})")
-            print("🧠 AI Agent analyzing payload... 'ConsentRevoked' event verified.")
-            print("🔥 Triggering Enterprise Data Deletion Protocol...")
-
-            # Fire the request to Paarth's DB
-            try:
-                api_res = requests.post(MOCK_API_URL, json={"action": "purge_data", "timestamp": time.time()})
-                print(f"🏢 Enterprise DB Response: {api_res.status_code} - Data Successfully Purged.")
-            except Exception as e:
-                print(f"⚠️ API Strike Failed. Is Paarth's server running? Error: {e}")
-
-            print("✅ Mission accomplished. Resuming monitoring...\n")
+                print("✅ Mission accomplished. Resuming monitoring...\n")
 
         # Wait 5 seconds before checking the blockchain again
         print("👀 Scanning blockchain...", end="\r", flush=True)

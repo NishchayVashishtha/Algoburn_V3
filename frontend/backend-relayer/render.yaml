@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: algoburn-relayer
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: APP_ID
+        sync: false
+      - key: RELAYER_MNEMONIC
+        sync: false
+      - key: API_KEY
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: PORT
+        value: 10000
+    healthCheckPath: /health

@@ -1,110 +1,72 @@
-import algosdk from 'algosdk'
+// AlgoBurn Service - Secure Backend Relayer Integration
+// No private keys exposed to frontend!
 
-// ── Algod client (TestNet via AlgoNode) ─────────────────────────────────────
-const algodClient = new algosdk.Algodv2('', 'https://testnet-api.algonode.cloud', '')
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+const API_KEY = import.meta.env.VITE_API_KEY || 'dev-key-change-in-production';
 
-// ── Relayer account (custodial – never shown to the user) ───────────────────
-function getRelayerAccount() {
-  const mnemonic = import.meta.env.VITE_RELAYER_MNEMONIC
-  if (!mnemonic || mnemonic.includes('your_25_word')) {
-    throw new Error('VITE_RELAYER_MNEMONIC is not configured in .env')
+async function callBackend(endpoint, data = {}) {
+  const response = await fetch(`${BACKEND_URL}${endpoint}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': API_KEY,
+    },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.error || 'Backend request failed');
   }
-  return algosdk.mnemonicToSecretKey(mnemonic)
+
+  return result;
 }
 
-async function prepareATC(relayer, fee = 3000) {
-  const atc    = new algosdk.AtomicTransactionComposer()
-  const signer = algosdk.makeBasicAccountTransactionSigner(relayer)
-  const params = await algodClient.getTransactionParams().do()
-  params.flatFee = true
-  params.fee     = fee          // covers outer + inner txn fees
-  return { atc, signer, params }
+export async function runDiagnostics() {
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/diagnostics`, {
+      headers: {
+        'x-api-key': API_KEY,
+      },
+    });
+
+    const result = await response.json();
+    
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || 'Diagnostics failed');
+    }
+
+    return result.diagnostics;
+  } catch (error) {
+    console.error('Diagnostics error:', error);
+    return {
+      appId: 0,
+      appExists: false,
+      accountAddress: '',
+      accountBalance: 0,
+      errors: [error.message]
+    };
+  }
 }
 
-// ── mint_consent() → returns { txId, assetId } ──────────────────────────────
 export async function mintConsent() {
-  const relayer = getRelayerAccount()
-  const appId   = parseInt(import.meta.env.VITE_APP_ID, 10)
-
-  const { atc, signer, params } = await prepareATC(relayer, 3000)
-
-  atc.addMethodCall({
-    appID:      appId,
-    method:     new algosdk.ABIMethod({ name: 'mint_consent', args: [], returns: { type: 'uint64' } }),
-    methodArgs: [],
-    sender:     relayer.addr,
-    signer,
-    suggestedParams: params,
-  })
-
-  const result  = await atc.execute(algodClient, 4)
-  const assetId = Number(result.methodResults[0].returnValue)
-  const txId    = result.txIDs[0]
-
-  return { txId, assetId }
+  console.log('⚡ Requesting mint from backend relayer...');
+  const result = await callBackend('/api/mint-consent');
+  console.log(`✅ SBT minted! Asset ID: ${result.assetId}, TX: ${result.txId}`);
+  return result;
 }
 
-// ── claim_consent(asset_id) → void ──────────────────────────────────────────
 export async function claimConsent(assetId) {
-  const relayer = getRelayerAccount()
-  const appId   = parseInt(import.meta.env.VITE_APP_ID, 10)
-
-  // ── Step 1: opt-in (separate tx, must confirm first) ──────────────────────
-  const optInParams = await algodClient.getTransactionParams().do()
-  const optInTxn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-    sender:      relayer.addr,
-    receiver:    relayer.addr,
-    assetIndex:  assetId,
-    amount:      0,
-    suggestedParams: { ...optInParams, flatFee: true, fee: 1000 },
-  })
-  const signedOptIn = optInTxn.signTxn(relayer.sk)
-  const { txid: optInTxId } = await algodClient.sendRawTransaction(signedOptIn).do()
-  await algosdk.waitForConfirmation(algodClient, optInTxId, 10)
-
-  // ── Step 2: claim_consent ABI call ─────────────────────────────────────────
-  const { atc, signer, params } = await prepareATC(relayer, 2000)
-
-  atc.addMethodCall({
-    appID:  appId,
-    method: new algosdk.ABIMethod({
-      name:    'claim_consent',
-      args:    [{ type: 'uint64', name: 'asset_id' }],
-      returns: { type: 'void' },
-    }),
-    methodArgs:    [assetId],
-    // 🔥 FIX: 'foreignAssets' ki jagah 'appForeignAssets' use hota hai ATC mein
-    appForeignAssets: [assetId], 
-    sender:        relayer.addr,
-    signer,
-    suggestedParams: params,
-  })
-
-  await atc.execute(algodClient, 4)
+  console.log(`⚡ Requesting claim for asset ${assetId} from backend relayer...`);
+  const result = await callBackend('/api/claim-consent', { assetId });
+  console.log(`✅ Consent claimed! TX: ${result.txId}`);
+  return result;
 }
 
-// ── burn_consent(asset_id) → returns txId ───────────────────────────────────
 export async function burnConsent(assetId) {
-  const relayer = getRelayerAccount()
-  const appId   = parseInt(import.meta.env.VITE_APP_ID, 10)
-
-  const { atc, signer, params } = await prepareATC(relayer, 3000)
-
-  atc.addMethodCall({
-    appID:  appId,
-    method: new algosdk.ABIMethod({
-      name:    'burn_consent',
-      args:    [{ type: 'uint64', name: 'asset_id' }],
-      returns: { type: 'void' },
-    }),
-    methodArgs:    [assetId],
-    // 🔥 FIX: 'foreignAssets' ki jagah 'appForeignAssets' use hota hai ATC mein
-    appForeignAssets: [assetId],   
-    sender:        relayer.addr,
-    signer,
-    suggestedParams: params,
-  })
-
-  const result = await atc.execute(algodClient, 4)
-  return result.txIDs[0]
+  console.log(`🔥 Requesting burn for asset ${assetId} from backend relayer...`);
+  const result = await callBackend('/api/burn-consent', { assetId });
+  console.log(`✅ Consent revoked! TX: ${result.txId}`);
+  return result;
 }

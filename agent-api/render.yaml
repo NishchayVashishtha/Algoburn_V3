@@ -1,0 +1,15 @@
+services:
+  - type: worker
+    name: algoburn-ai-agent
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python agent.py
+    envVars:
+      - key: APP_ID
+        value: 758657427
+      - key: INDEXER_URL
+        value: https://testnet-idx.algonode.cloud
+      - key: ENTERPRISE_API_URL
+        sync: false
+      - key: ENTERPRISE_API_KEY
+        sync: false

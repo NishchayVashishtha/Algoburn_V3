@@ -1,0 +1,10 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "python agent.py"
+restartPolicyType = "ALWAYS"
+restartPolicyMaxRetries = 999
+
+# This is a long-running process, not a web service
+# No healthcheck needed
